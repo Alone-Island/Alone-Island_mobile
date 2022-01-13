@@ -182,4 +182,26 @@ public class HappyEnding : MonoBehaviour
         }
         Invoke("TheEnd", 2.0f);           // K : 카드를 띄운 뒤 2초후에 해피 엔딩 신 종료 함수 호출
     }
+
+    // J : 화면 터치하면 실행
+    public void ScreenTouch()
+    {
+        if (!isEndingCardShow)  // K : 해피 엔딩 카드가 보여지고 있지 않을때만 타이핑 효과를 주기 위한 코드입니다.
+        {
+            if (!isTyping)  // K : 현재 글자가 화면에 타이핑 되고 있지 않을 때
+            {
+                // K : 스페이스바를 눌렀을 때 현재 글자가 화면에 타이핑 되고 있지 않는다면, 다음 문장 타이핑하기 위한 코드입니다.
+                StartCoroutine("TypingAction", 0);
+            }
+            else
+            {
+                // K : 스페이스바를 눌렀을 때 현재 글자가 화면에 타이핑 되고 있다면, 부분 스킵을 위해 isSkipPart true로 변경하는 코드입니다.
+                isSkipPart = true;
+            }
+        }
+        if (isEnd) // K : 해피엔딩이 종료되었을 때만 엔딩 크레딧 신으로 넘어가기 위한 코드입니다.
+        {
+            SceneManager.LoadScene("EndingCredits");
+        }
+    }
 }

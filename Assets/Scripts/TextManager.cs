@@ -96,4 +96,19 @@ public class TextManager : MonoBehaviour
         isTyping = false;   // isTyping 초기화
         currentPoint++;     // 텍스트 배열의 포인터 옮김
     }
+
+    // J : 화면 터치하면 실행
+    public void ScreenTouch()
+    {
+        if (!isTyping)  // K : 현재 글자가 화면에 타이핑 되고 있지 않을 때
+        {
+            // K : 스페이스바를 눌렀을 때 현재 글자가 화면에 타이핑 되고 있지 않는다면, 다음 문장 타이핑하기 위한 코드
+            StartCoroutine("TypingAction", 0);
+        }
+        else
+        {
+            // K : 스페이스바를 눌렀을 때 현재 글자가 화면에 타이핑 되고 있다면, 부분 스킵을 위해 isSkipPart true로 변경하는 코드
+            isSkipPart = true;
+        }
+    }
 }
