@@ -9,4 +9,6 @@ public class SettingData
 {
     public float BackgroundSound = 1;  // J : ¹è°æÀ½¾Ç
     public float EffectSound = 1;   // J : È¿°úÀ½¾Ç
+    public bool BackgroundMute = false;
+    public bool EffectMute = false;
 }

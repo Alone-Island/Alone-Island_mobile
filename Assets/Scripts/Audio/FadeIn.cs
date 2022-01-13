@@ -20,17 +20,20 @@ public class FadeIn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isFadeIn)
+        bool backgroundMute = DataController.Instance.settingData.BackgroundMute;
+        if (!backgroundMute)
         {
-            fadeDeltaTime += Time.deltaTime;
-            if(fadeDeltaTime >= fadeInSeconds)
+            if (isFadeIn)
             {
-                fadeDeltaTime = fadeInSeconds;
-                isFadeIn = false;
+                fadeDeltaTime += Time.deltaTime;
+                if (fadeDeltaTime >= fadeInSeconds)
+                {
+                    fadeDeltaTime = fadeInSeconds;
+                    isFadeIn = false;
+                }
+                // J : 설정데이터에 저장된 소리값까지만 페이드인
+                audioSource.volume = DataController.Instance.settingData.BackgroundSound * (float)(fadeDeltaTime / fadeInSeconds);
             }
-            // J : 설정데이터에 저장된 소리값까지만 페이드인
-            audioSource.volume = DataController.Instance.settingData.BackgroundSound * (float)(fadeDeltaTime / fadeInSeconds);
-        }
-        
+        }        
     }
 }

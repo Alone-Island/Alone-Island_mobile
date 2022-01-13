@@ -10,7 +10,19 @@ public class KeyboardHappyEnding : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        float effectVolume = DataController.Instance.settingData.EffectSound;    // J : 설정 데이터의 효과음악 음량 가져오기
+        bool effectMute = DataController.Instance.settingData.EffectMute;
         audioSource = GetComponent<AudioSource>();
+
+        if (effectMute)
+        {
+            audioSource.volume = 0;
+        }
+        else
+        {
+            audioSource.volume = effectVolume;
+        }
+
         textManager = GameObject.Find("HappyEnding").GetComponent<HappyEnding>();
     }
 
