@@ -23,6 +23,8 @@ public class SettingManager : MonoBehaviour
     private bool backgroundMute;
     private bool effectMute;
 
+    public GameObject background;
+
     void Start()
     {
         if (setting != null )// J : 씬에 설정창이 있는 경우
@@ -97,10 +99,12 @@ public class SettingManager : MonoBehaviour
         if (setting.activeSelf)
         {
             setting.SetActive(false);// J : 설정창 비활성화
+            background.SetActive(false);
             nowSetting = false;      // J : 시간 멈추기
         } else
         {
             setting.SetActive(true);// J : 설정창 활성화
+            background.SetActive(true);
             nowSetting = true;      // J : 시간 재생
         }            
     }
@@ -109,6 +113,7 @@ public class SettingManager : MonoBehaviour
     public void SelectSettingQuit()
     {
         setting.SetActive(false);   // J : 설정창 비활성화
+        background.SetActive(false);
         nowSetting = false;         // J : 시간 재생
 
     }

@@ -20,6 +20,8 @@ public class MenuScript : MonoBehaviour
 
     private GameObject currentCard;
 
+    public GameObject background;
+
 
     // J : 시작하기 버튼 onclick
     public void SelectStart()
@@ -38,11 +40,14 @@ public class MenuScript : MonoBehaviour
         if (gameRule.activeSelf)
         {
             gameRule.SetActive(false);   // J : 게임방법창 비활성화
+
+            background.SetActive(false);
         } else
         {
             gameRule.SetActive(true);   // J : 게임방법창 활성화
             SelectEndingCardQuit();
             SelectSettingQuit();
+            background.SetActive(true);
         }
     }
 
@@ -51,6 +56,7 @@ public class MenuScript : MonoBehaviour
     {
         Debug.Log("게임방법 나가기");
         gameRule.SetActive(false);  // J : 게임방법창 비활성화
+        background.SetActive(false);
     }
 
     // J : 설정창 나가기 버튼 onclick
@@ -59,12 +65,14 @@ public class MenuScript : MonoBehaviour
         if (setting.activeSelf)
         {
             setting.SetActive(false);// J : 설정창 비활성화
+            background.SetActive(false);
         }
         else
         {
             setting.SetActive(true);// J : 설정창 활성화
             SelectEndingCardQuit();
             SelectRuleQuit();
+            background.SetActive(true);
         }
     }
 
@@ -72,6 +80,7 @@ public class MenuScript : MonoBehaviour
     public void SelectSettingQuit()
     {
         setting.SetActive(false);   // J : 설정창 비활성화
+        background.SetActive(false);
 
     }
 
@@ -89,6 +98,7 @@ public class MenuScript : MonoBehaviour
         scrollView.SetActive(true);
         SelectRuleQuit();
         SelectSettingQuit();
+        background.SetActive(true);
 
         Image card;
 
@@ -434,6 +444,7 @@ public class MenuScript : MonoBehaviour
         Debug.Log("엔딩카드 나가기");
         if (currentCard != null)
             currentCard.SetActive(false);
+        background.SetActive(false);
         scrollView.SetActive(false);  // J : 게임방법창 비활성화
     }
 
