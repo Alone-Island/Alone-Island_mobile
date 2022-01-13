@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 
 public class TutorialScript : MonoBehaviour
 {
-    public GameManager gameManager;
-    public GameObject tutorialCanvas;
-    public List<GameObject> stepList;
+    public GameManager gameManager;     // J : 튜토리얼 중에 상호작용 X, 시간 X 설정을 위해
+    public GameObject tutorialCanvas;   // J : 모든 튜토리얼의 부모 오브젝트
+    public List<GameObject> stepList;   // J : 튜토리얼 단계별 캔버스 오브젝트 리스트
 
     private int stepCount = 0;
 
@@ -28,7 +28,7 @@ public class TutorialScript : MonoBehaviour
     private void StartTutorial()
     {
         tutorialCanvas.SetActive(true); // J : 튜토리얼 UI 활성화
-        gameManager.tutorial = true;    // J : 튜토리얼 중에 상호작용, 시간 X
+        gameManager.tutorial = true;    // J : 튜토리얼 중에 상호작용 X, 시간 X
     }
 
     public void ScreenTouch()
