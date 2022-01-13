@@ -16,10 +16,12 @@ public class PlayerAction : MonoBehaviour
 
     private AIAction aiAction;
 
-    float h;    // C : horizontal (수평 이동)
-    float v;    // C : vertical (수직 이동)
+    public float h;    // C : horizontal (수평 이동)
+    public float v;    // C : vertical (수직 이동)
+
     bool isHorizonMove;     // C : 수평 이동이면 true, 수직 이동이면 false
     Vector3 dirVec;     // C : 현재 바라보고 있는 방향 값
+    Vector2 moveVec;
     GameObject scanObject;  // C : 스캔된 game object
 
     //N : 학습하기 안내 아이콘들
@@ -57,6 +59,8 @@ public class PlayerAction : MonoBehaviour
         // J : 설정창 활성화 상태면 action X
         if (settingManager.nowSetting)
             return;
+
+        /*
         // C : 입력된 수평/수직 이동을 대입 (-1, 0, 1)
         // C : GameManager의 isTPShow를 사용하여 talkPanel이 보여지고 있을 때
         // J : or SpecialEventManager의 special을 사용하여 스페셜 이벤트 진행 중인 경우 플레이어의 이동을 제한
@@ -80,6 +84,14 @@ public class PlayerAction : MonoBehaviour
             isHorizonMove = false;
         else if (hUp || vUp)        // C : 수평 키나 수직 키의 양 쪽(e.g.(<- && ->))을 둘 다 눌렀다 뗐을 때도 고려
             isHorizonMove = h != 0;
+        */
+
+        // C : 입력된 수평/수직 이동을 대입 (-1, 0, 1)
+        // C : GameManager의 isTPShow를 사용하여 talkPanel이 보여지고 있을 때
+        // J : or SpecialEventManager의 special을 사용하여 스페셜 이벤트 진행 중인 경우 플레이어의 이동을 제한
+        // N :
+        h = manager.isTPShow || specialManager.special || manager.isEndingShow ? 0 : h;
+        v = manager.isTPShow || specialManager.special || manager.isEndingShow ? 0 : v;
 
         // C : Animation - moving
         if (anim.GetInteger("hAxisRaw") != h)       // C : "hAxisRaw" 값이 현재 h 값과 다를 때
@@ -96,15 +108,19 @@ public class PlayerAction : MonoBehaviour
             anim.SetBool("isChange", false);        // C : 방향 변화를 위한 animation parameter 값을 false로 설정
 
         // C : dirVec(현재 바라보고 있는 방향) 값 설정
-        if (vDown && v == 1)                // C : 수직 키를 눌렀고, 입력된 수직 값이 1이면
-            dirVec = Vector3.up;            // C : dirVec 값은 up
-        else if (vDown && v == -1)          // C : 수직 키를 눌렀고, 입력된 수직 값이 -1이면
-            dirVec = Vector3.down;          // C : dirVec 값은 down
-        if (hDown && h == -1)               // C : 수평 키를 눌렀고, 입력된 수평 값이 -1이면
-            dirVec = Vector3.left;          // C : dirVec 값은 left
-        if (hDown && h == 1)                // C : 수평 키를 눌렀고, 입력된 수평 값이 1이면
-            dirVec = Vector3.right;         // C : dirVec 값은 right
+        // J : moveVec(움직이는 방향) 값은 dirVec와 동일, 방향키 조작하지 않는 경우에는 (0, 0, 0)
+        if (v == 1)                // C : 수직 키를 눌렀고, 입력된 수직 값이 1이면
+            moveVec = dirVec = Vector3.up;            // C : dirVec 값은 up
+        else if (v == -1)          // C : 수직 키를 눌렀고, 입력된 수직 값이 -1이면
+            moveVec = dirVec = Vector3.down;          // C : dirVec 값은 down
+        else if (h == -1)               // C : 수평 키를 눌렀고, 입력된 수평 값이 -1이면
+            moveVec = dirVec = Vector3.left;          // C : dirVec 값은 left
+        else if (h == 1)                // C : 수평 키를 눌렀고, 입력된 수평 값이 1이면
+            moveVec = dirVec = Vector3.right;         // C : dirVec 값은 right
+        else
+            moveVec = Vector3.zero;
 
+        /*
         // J : 스페이스바 누름
         if (Input.GetButtonDown("Jump"))
         {
@@ -129,6 +145,7 @@ public class PlayerAction : MonoBehaviour
                 SceneManager.LoadScene("GameMenu"); // K : 배드엔딩이 끝나고 바로 게임 메뉴로 돌아갑니다., 해피엔딩은 textmanager에서 처리함
             }
         }
+        */
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -196,7 +213,6 @@ public class PlayerAction : MonoBehaviour
     void FixedUpdate()
     {
         // C : player moving
-        Vector2 moveVec = isHorizonMove ? new Vector2(h, 0) : new Vector2(0, v);    // C : 수평 혹은 수직 이동만 가능하도록 moveVec 설정
         rigid.velocity = moveVec * speed;     // C : rigid의 속도(속력 + 방향) 설정
 
         // C : Ray
@@ -212,6 +228,31 @@ public class PlayerAction : MonoBehaviour
         }
         else
             scanObject = null;
+    }
+
+    public void ScreenTouch()
+    {
+        Debug.Log("Touch");
+        if (specialManager.special)     // J : 스페셜 이벤트 진행 중
+        {
+            if (specialManager.specialTalk)  // J : 선택지가 뜨기 전이라면
+                specialManager.Talk();  // J : specialManager의 Talk 함수 호출
+            else if (specialManager.resultTalk)     // J : 선택지 클릭한 후 (스페셜 이벤트 진행중)
+                specialManager.ResultTalk();    // J : 결과 텍스트 보여주기
+        }
+        else if (manager.isEndingShow)  // J : 엔딩 보여주는 중
+            endingManager.BadEndingTalk();  // J : 엔딩 대화 보여주기
+        else if (scanObject != null)        // J : 스페셜 이벤트 진행 중이 아니고 scanObject가 있으면
+            manager.Action(scanObject);     // C : 맵의 대화창에 적절한 메세지가 뜰 수 있도록 Action()함수 실행
+        else    // J : 아무 상태도 아니거나 책 찾았다는 대화창이 뜬 상태..
+            manager.talkPanel.SetActive(false); // J : 대화창 끄기
+
+        // N : 엔딩 크레딧으로 연결
+        // N : 나중에 버튼 만들어서 클릭으로 처리하면 좋을 것 같음.
+        if (manager.isTheEnd)
+        {
+            SceneManager.LoadScene("GameMenu"); // K : 배드엔딩이 끝나고 바로 게임 메뉴로 돌아갑니다., 해피엔딩은 textmanager에서 처리함
+        }
     }
 
     // J : 책을 찾았을 때
