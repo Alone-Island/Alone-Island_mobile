@@ -56,8 +56,8 @@ public class PlayerAction : MonoBehaviour
 
     void Update()
     {
-        // J : 설정창 활성화 상태면 action X
-        if (settingManager.nowSetting)
+        // J : 설정 중이거나 튜토리얼 중이면 action X
+        if (settingManager.nowSetting || manager.tutorial)
             return;
 
         /*

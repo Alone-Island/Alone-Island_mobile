@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public ScreenManager screenManager; // N : 책 개수 가져오기 위해
     public AIAction aiAction;           // K : ai와 play가 충돌중인지 확인하기 위해서 > 대화 가능
 
+    public bool tutorial = false;       // J : 튜토리얼 진행 플래그
     public bool playerTalk = false;           // J : 플레이어가 대화하는 중에는 special event를 유예하도록 변수 생성
     public bool isSelectedAILearning = true;         // K : AI가 학습을 할것인지 학습을 하지 않을 것인지 확인하는 플래그
     public bool isEndingShow = false;         // N : 엔딩 여부 (엔딩 카드 나타난 직후부터)
