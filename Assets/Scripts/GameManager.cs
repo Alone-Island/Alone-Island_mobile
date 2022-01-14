@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public ScreenManager screenManager; // N : 책 개수 가져오기 위해
     public AIAction aiAction;           // K : ai와 play가 충돌중인지 확인하기 위해서 > 대화 가능
 
+    public bool tutorial = false;       // J : 튜토리얼 진행 플래그
     public bool playerTalk = false;           // J : 플레이어가 대화하는 중에는 special event를 유예하도록 변수 생성
     public bool isSelectedAILearning = true;         // K : AI가 학습을 할것인지 학습을 하지 않을 것인지 확인하는 플래그
     public bool isEndingShow = false;         // N : 엔딩 여부 (엔딩 카드 나타난 직후부터)
@@ -32,21 +33,13 @@ public class GameManager : MonoBehaviour
 
     public ObjectData aiObjData;            // C : 빌드 시 스크립트를 통한 GetComponent 방식에 에러가 발생하기 때문에 (임시로) AIObject를 퍼블릭 변수로 설정
 
-    private string talkData;
-    public int talkId;
-
     // C : 플레이어가 Object에 대해 조사 시(플레이어의 액션 발생 시) 적절한 내용을 포함한 대화창 띄워주기
     public void Action(GameObject scanObj)
     {
         playerTalk = true;                  // J : 플레이어가 대화하는 중에는 special event를 유예하도록 설정
         scanObject = scanObj;               // C : parameter로 들어온 스캔된 game object를 public 변수인 scanObject에 대입
         ObjectData objData = scanObject.GetComponent<ObjectData>();     // C : scanObject의 ObjectData instance 가져오기
-
-        if (talkId == 0)
-        {
-            talkIndex = 0;              // C : 다음 Talk()함수 사용을 위해 talkIndex를 0으로 초기화
-            randomNum = 0;              // C : 다음 Talk()함수 사용을 위해 randomNum을 0으로 초기화
-        }
+        int talkId;
 
         if (aiAction.isAICollisionToPlayer) // K : ai와 충돌중이라면 학습장소에서도 대화하기를 우선으로 한다.
         {
@@ -63,26 +56,19 @@ public class GameManager : MonoBehaviour
             if (randomNum == 1000) talkId = 2000;
             else if (randomNum == 0) // C : 대화 첫 시작
             {
-                if (learningManager.isAILearning) // K : 대화를 시도 했을때, AI 학습중인 경우 예외처리
+                if (dayTalk > 0)
                 {
-                    talkId = 500;
-                    randomNum = 0;
-                } else
+                    talkId = 2000;                                  // N : 하루에 한 번 이상 대화를 시도하는 경우 예외 처리
+                    randomNum = 1000;                               // N : 대화 중에 하루가 지나면 새로운 대화가 일어나는 것을 방지
+                }
+                else
                 {
-                    if (dayTalk > 0)
-                    {
-                        talkId = 2000;                                  // N : 하루에 한 번 이상 대화를 시도하는 경우 예외 처리
-                        randomNum = 1000;                               // N : 대화 중에 하루가 지나면 새로운 대화가 일어나는 것을 방지
-                    }
-                    else
-                    {
-                        System.Random rand = new System.Random();
-                        randomNum = rand.Next(1, 18);                  // C : 1~18까지의 난수를 대입
-                    }
+                    System.Random rand = new System.Random();
+                    randomNum = rand.Next(1, 18);                  // C : 1~18까지의 난수를 대입
                 }
             }
         }
-        else if (objData.id >= 100 && objData.id <= 400)     // C : 학습하기를 시도했을 때
+        else if (objData.id >= 100 && objData.id <= 400)      // C : 학습하기를 시도했을 때
         {
             if (learningManager.isAILearning) // K : 학습하기 조사를 했을때, AI 학습중인 경우 예외처리
             {
@@ -102,20 +88,10 @@ public class GameManager : MonoBehaviour
 
         Talk(talkId);                   // C : 필요한 talkPanel text 값 가져오기, K : 예외처리를 위해 objData.id > talkId로 수정
 
-        if (talkId == 1000) {
-            talkPanel.SetActive(true);      // C : talkPanel 숨기거나 보여주기
-            GameObject.Find("Alert").transform.Find("Alert Set").gameObject.SetActive(false); // N : 알림창 숨기기
-        }
+        if (talkId == 1000) talkPanel.SetActive(isTPShow);      // C : talkPanel 숨기거나 보여주기
         else
         {
-            talkPanel.SetActive(false);      // C : talkPanel 숨기거나 보여주기
-            GameObject.Find("Alert").transform.Find("Alert Set").gameObject.SetActive(true); // N : 알림창 띄워주기
-        }
-
-        if (talkData == null)
-        {
-            talkPanel.SetActive(false);      // C : talkPanel 숨기거나 보여주기
-            GameObject.Find("Alert").transform.Find("Alert Set").gameObject.SetActive(false); // N : 알림창 띄워주기
+            GameObject.Find("Alert").transform.Find("Alert Set").gameObject.SetActive(isTPShow); // N : 알림창 띄워주기
         }
     }
 
@@ -123,7 +99,7 @@ public class GameManager : MonoBehaviour
     void Talk(int id)
     {
         // C : 조사한 object에 해당하는 talkData 중 talkIndex 위치의 string을 가져오기
-        talkData = talkManager.GetTalkData(id + randomNum, talkIndex);
+        string talkData = talkManager.GetTalkData(id + randomNum, talkIndex);
 
         if (talkData == null || !isSelectedAILearning)           // C : 해당하는 id의 talkData string들을 모두 가져왔다면
         {
