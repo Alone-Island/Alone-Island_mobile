@@ -33,13 +33,21 @@ public class GameManager : MonoBehaviour
 
     public ObjectData aiObjData;            // C : 빌드 시 스크립트를 통한 GetComponent 방식에 에러가 발생하기 때문에 (임시로) AIObject를 퍼블릭 변수로 설정
 
+    private string talkData;
+    public int talkId;
+
     // C : 플레이어가 Object에 대해 조사 시(플레이어의 액션 발생 시) 적절한 내용을 포함한 대화창 띄워주기
     public void Action(GameObject scanObj)
     {
         playerTalk = true;                  // J : 플레이어가 대화하는 중에는 special event를 유예하도록 설정
         scanObject = scanObj;               // C : parameter로 들어온 스캔된 game object를 public 변수인 scanObject에 대입
         ObjectData objData = scanObject.GetComponent<ObjectData>();     // C : scanObject의 ObjectData instance 가져오기
-        int talkId;
+
+        if (talkId == 0)
+        {
+            talkIndex = 0;              // C : 다음 Talk()함수 사용을 위해 talkIndex를 0으로 초기화
+            randomNum = 0;              // C : 다음 Talk()함수 사용을 위해 randomNum을 0으로 초기화
+        }
 
         if (aiAction.isAICollisionToPlayer) // K : ai와 충돌중이라면 학습장소에서도 대화하기를 우선으로 한다.
         {
@@ -99,7 +107,7 @@ public class GameManager : MonoBehaviour
     void Talk(int id)
     {
         // C : 조사한 object에 해당하는 talkData 중 talkIndex 위치의 string을 가져오기
-        string talkData = talkManager.GetTalkData(id + randomNum, talkIndex);
+        talkData = talkManager.GetTalkData(id + randomNum, talkIndex);
 
         if (talkData == null || !isSelectedAILearning)           // C : 해당하는 id의 talkData string들을 모두 가져왔다면
         {

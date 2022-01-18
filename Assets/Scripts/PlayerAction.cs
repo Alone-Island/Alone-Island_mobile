@@ -242,6 +242,13 @@ public class PlayerAction : MonoBehaviour
         }
         else if (manager.isEndingShow)  // J : 엔딩 보여주는 중
             endingManager.BadEndingTalk();  // J : 엔딩 대화 보여주기
+        else if (manager.talkId == 500 || manager.talkId == 600 || manager.talkId == 3000) // K : 이전에 알림창 중 세가지 종류가 떴을 경우
+        {
+            GameObject.Find("Alert").transform.Find("Alert Set").gameObject.SetActive(false); // K : 알림창 끄기
+            manager.talkId = 0;
+            manager.playerTalk = false;         // K : 정상적으로 special event가 발동하도록 설정
+            manager.isTPShow = false;           // K : talkPanel의 show 상태 false로 저장
+        }
         else if (scanObject != null)        // J : 스페셜 이벤트 진행 중이 아니고 scanObject가 있으면
             manager.Action(scanObject);     // C : 맵의 대화창에 적절한 메세지가 뜰 수 있도록 Action()함수 실행
         else    // J : 아무 상태도 아니거나 책 찾았다는 대화창이 뜬 상태..
